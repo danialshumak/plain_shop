@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>plain_shop: простые вещи</title>
+<meta name="description" content="Каталог plain_shop. Заказ в WhatsApp и Telegram.">
+<style>
+  :root{
+    --bg:#eef1f4; --card:#ffffff; --ink:#1b2430; --muted:#5b6675;
+    --line:#d5dbe2; --accent:#0f6b5c; --accent-ink:#ffffff;
+    --tg:#229ed9; --wa:#1fa855;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    line-height:1.5; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 18px}
+  header{padding:44px 0 28px}
+  .logo{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--muted)}
+  h1{
+    margin:10px 0 12px; font-size:clamp(34px,9vw,60px);
+    line-height:1.05; font-weight:800; letter-spacing:-.025em;
+  }
+  .lead{margin:0 0 22px; max-width:46ch; color:var(--muted); font-size:17px}
+  .btns{display:flex; flex-wrap:wrap; gap:10px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:13px 20px; border-radius:10px; border:0; cursor:pointer;
+    font:inherit; font-weight:600; text-decoration:none; color:#fff;
+    min-height:48px;
+  }
+  .btn.wa{background:var(--wa)}
+  .btn.tg{background:var(--tg)}
+  .btn:focus-visible,.order:focus-visible{outline:3px solid var(--ink); outline-offset:2px}
+  .info{
+    display:flex; flex-wrap:wrap; gap:8px 22px; margin:0; padding:14px 0 26px;
+    list-style:none; color:var(--muted); font-size:15px;
+  }
+  h2{margin:0 0 16px; font-size:24px; letter-spacing:-.01em}
+  .grid{
+    display:grid; gap:14px; padding-bottom:40px;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  }
+  .item{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  .pic{
+    aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+    font-size:44px; font-weight:800; color:rgba(255,255,255,.92);
+    letter-spacing:-.03em;
+  }
+  .pic img{width:100%; height:100%; object-fit:cover; display:block}
+  .body{padding:14px; display:flex; flex-direction:column; gap:6px; flex:1}
+  .name{margin:0; font-size:17px; font-weight:700}
+  .desc{margin:0; color:var(--muted); font-size:14px; flex:1}
+  .price{font-size:20px; font-weight:800; margin-top:4px}
+  .order{
+    margin-top:8px; display:block; text-align:center; text-decoration:none;
+    background:var(--accent); color:var(--accent-ink); font-weight:600;
+    padding:12px; border-radius:10px; min-height:46px;
+  }
+  .how{background:var(--card); border-top:1px solid var(--line); padding:34px 0}
+  .how ol{margin:0; padding-left:20px; color:var(--muted); max-width:52ch}
+  .how li{margin-bottom:8px}
+  footer{padding:26px 0 40px; color:var(--muted); font-size:14px}
+  footer a{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="logo">plain_shop</div>
+  <h1>Простые вещи без лишнего</h1>
+  <p class="lead">Выберите товар и нажмите «Заказать». Сообщение с названием и ценой откроется в WhatsApp, остаётся только отправить.</p>
+  <div class="btns">
+    <a class="btn wa" href="https://wa.me/77051220370" target="_blank" rel="noopener">Написать в WhatsApp</a>
+    <a class="btn tg" href="https://t.me/WiZardert" target="_blank" rel="noopener">Написать в Telegram</a>
+  </div>
+  <ul class="info">
+    <li>Отвечаем в WhatsApp и Telegram</li>
+    <li>Оплата переводом на Kaspi</li>
+    <li>Доставка по Казахстану</li>
+  </ul>
+</header>
+
+<main class="wrap">
+  <h2>Каталог</h2>
+  <div class="grid" id="grid"></div>
+</main>
+
+<section class="how">
+  <div class="wrap">
+    <h2>Как заказать</h2>
+    <ol>
+      <li>Нажмите «Заказать» под нужным товаром.</li>
+      <li>В WhatsApp отправьте готовое сообщение и напишите размер или цвет.</li>
+      <li>Мы подтвердим наличие и пришлём реквизиты Kaspi для оплаты.</li>
+      <li>После оплаты отправим заказ и сообщим номер отслеживания.</li>
+    </ol>
+  </div>
+</section>
+
+<footer class="wrap">
+  © <span id="year"></span> plain_shop ·
+  <a href="https://wa.me/77051220370" target="_blank" rel="noopener">WhatsApp +7 705 122 03 70</a> ·
+  <a href="https://t.me/WiZardert" target="_blank" rel="noopener">Telegram @WiZardert</a>
+</footer>
+
+<script>
+  // ====== НАСТРОЙКИ (меняйте только здесь) ======
+  var WHATSAPP = "77051220370";   // номер без плюса и пробелов
+  var SHOP = "plain_shop";
+
+  // Товары. Чтобы добавить фото: загрузите файл в репозиторий
+  // и впишите его имя в поле img, например img: "tshirt.jpg"
+  var products = [
+    {name:"Футболка базовая", desc:"Плотный хлопок, свободный крой", price:7500, color:"#0f6b5c", img:""},
+    {name:"Худи оверсайз",   desc:"Футер с начёсом, цвета на выбор", price:18900, color:"#3d4f6b", img:""},
+    {name:"Кепка",           desc:"Регулируемый размер",            price:4500, color:"#7a5c3e", img:""},
+    {name:"Шоппер",          desc:"Холст, внутренний карман",       price:3500, color:"#8a4a5a", img:""},
+    {name:"Носки (3 пары)",  desc:"Хлопок, на каждый день",         price:3000, color:"#4d6b3f", img:""},
+    {name:"Кружка",          desc:"Керамика, 350 мл",               price:2800, color:"#5a4d7a", img:""}
+  ];
+  // ===============================================
+
+  function fmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + "\u00a0₸"; }
+
+  var grid = document.getElementById("grid");
+  products.forEach(function(p){
+    var text = "Здравствуйте! Хочу заказать в " + SHOP + ": " + p.name + " (" + fmt(p.price) + ").";
+    var link = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text);
+    var pic = p.img
+      ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">'
+      : p.name.charAt(0);
+    var card = document.createElement("article");
+    card.className = "item";
+    card.innerHTML =
+      '<div class="pic" style="background:' + p.color + '">' + pic + '</div>' +
+      '<div class="body">' +
+        '<h3 class="name">' + p.name + '</h3>' +
+        '<p class="desc">' + p.desc + '</p>' +
+        '<div class="price">' + fmt(p.price) + '</div>' +
+        '<a class="order" href="' + link + '" target="_blank" rel="noopener">Заказать</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
